@@ -2,7 +2,7 @@
   <v-container>
     <v-card>
       <v-card-title>
-        <h1 class="mb-5">Gerenciamento de Clientes</h1>
+        <h1 class="mb-5">Gerenciamento de Produtos</h1>
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="openDialog()">Novo Produto</v-btn>
       </v-card-title>
@@ -88,6 +88,11 @@ export default {
       try {
         const response = await axios.get('http://localhost:3000/produtos');
         this.produtos = response.data;
+        this.$nextTick(() => {
+          //  Você pode até forçar uma atualização aqui, se necessário:
+           this.$forceUpdate(this.headers);
+          return this.headers
+        });
       } catch (error) {
         console.error(error);
       }
