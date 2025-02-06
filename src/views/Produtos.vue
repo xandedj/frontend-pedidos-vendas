@@ -12,6 +12,7 @@
         :search="search"
         :items-per-page="10"
         class="elevation-1"
+        show-select
       >
         <template #top>
           <v-text-field
@@ -23,10 +24,10 @@
         <!-- Se necessário, desabilite a regra ESLint para esse slot -->
         <!-- eslint-disable-next-line vue/valid-v-slot -->
         <template #item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editProduto(item)">
+          <v-icon small  color="primary" @click="editProduto(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deleteProduto(item.id_produto)">
+          <v-icon small color="red" @click="deleteProduto(item.id_produto)">
             mdi-delete
           </v-icon>
         </template>
@@ -62,14 +63,16 @@ export default {
   name: 'ProdutosView',
   data() {
     return {
+      loading: true,
       headers: [
-        { text: 'ID', value: 'id_produto' },
-        { text: 'Nome', value: 'nome' },
-        { text: 'Preço', value: 'preco' },
-        { text: 'Ações', value: 'actions', sortable: false }
+        { title: 'Cod', key: 'id_produto' },
+        { title: 'Nome', key: 'nome' },
+        { title: 'Preço', key: 'preco' , align: 'end'},
+        { title: 'Ações', key: 'actions', align: 'end'}
       ],
       produtos: [],
       search: '',
+      select:[],
       dialog: false,
       editedIndex: -1,
       editedItem: {
@@ -81,18 +84,13 @@ export default {
   },
   created() {
     this.fetchProdutos();
-    this.headers
   },
   methods: {
     async fetchProdutos() {
       try {
         const response = await axios.get('http://localhost:3000/produtos');
         this.produtos = response.data;
-        this.$nextTick(() => {
-          //  Você pode até forçar uma atualização aqui, se necessário:
-           this.$forceUpdate(this.headers);
-          return this.headers
-        });
+        
       } catch (error) {
         console.error(error);
       }
@@ -102,6 +100,7 @@ export default {
       this.editedItem = { id_produto: null, nome: '', preco: 0 };
       this.dialog = true;
     },
+
     editProduto(item) {
       this.editedIndex = this.produtos.indexOf(item);
       this.editedItem = Object.assign({}, item);
